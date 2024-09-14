@@ -8,4 +8,5 @@ class GetResultsService(private val getResultsRepository: GetResultsRepository) 
     fun saveDataScraped(data: AuthorsEntity): AuthorsEntity {
         return getResultsRepository.save(data)
     }
+    fun getAllData(): MutableList<AuthorsEntity> = getResultsRepository.findAll()
 }

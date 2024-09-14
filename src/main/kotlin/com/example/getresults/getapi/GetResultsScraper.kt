@@ -9,13 +9,14 @@ import java.time.format.DateTimeFormatter
 
 const val URL_TO_SCRAPE: String = "https://quotes.toscrape.com/"
 const val CSS_SELECTOR_TO_SCRAPE: String = "small.author"
-const val TIMER_UNTIL_SCRAPE: Int= 60000
+const val TIMER_UNTIL_SCRAPE: Int = 1000 * 60
 
 @Service
 class GetResultsScraper(
     private val getResultsService: GetResultsService
 ) {
     private val scrapedData = mutableListOf<String>()
+
     private var lastExecutionTime: Long = 0
 
     @Scheduled(fixedRate = (1000 * TIMER_UNTIL_SCRAPE).toLong()) // in ms
@@ -31,6 +32,7 @@ class GetResultsScraper(
             authors.forEach { author ->
                 val authorName = author.text()
                 scrapedData.add(authorName)
+                println(scrapedData)
                 getResultsService.saveDataScraped(AuthorsEntity(name = authorName))
             }
         } catch (e: Exception) {
@@ -39,16 +41,11 @@ class GetResultsScraper(
         }
     }
 
-    fun getScrapedData(): List<String> {
-        println("scrapedData: $scrapedData")
-        return scrapedData
-    }
-
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 10000)
     fun getTimeUntilNextExecution() {
         val currentTime = System.currentTimeMillis()
         val elapsedTime = currentTime - lastExecutionTime
-        val timeUntilNext = (maxOf(1000 * TIMER_UNTIL_SCRAPE - elapsedTime, 0) / 1000) + 1
+        val timeUntilNext = (maxOf(TIMER_UNTIL_SCRAPE - elapsedTime, 0) / 1000) + 1
         println("Time until next execution: $timeUntilNext seconds")
     }
 }

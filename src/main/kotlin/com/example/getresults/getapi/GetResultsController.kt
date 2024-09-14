@@ -1,4 +1,7 @@
+import com.example.getresults.getapi.GetResultsRepository
 import com.example.getresults.getapi.GetResultsScraper
+import com.example.getresults.getapi.GetResultsService
+import com.example.getresults.models.AuthorsEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -7,12 +10,15 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/scraper")
-class GetResultsController(private val getResultsScraper: GetResultsScraper) {
+class GetResultsController(private val getResultsScraper: GetResultsScraper,
+                           private val getResultsRepository: GetResultsRepository,
+                            private val getResultsService: GetResultsService
+) {
 
-    @GetMapping("/data")
-    fun getData(): ResponseEntity<List<String>> {
+    @GetMapping("/datas")
+    fun getData(): MutableList<AuthorsEntity> {
         println("Fetching data via GET /api/scraper/data")
-        return ResponseEntity.ok(getResultsScraper.getScrapedData())
+        return getResultsService.getAllData()
     }
 
     @PostMapping("/scrape")
